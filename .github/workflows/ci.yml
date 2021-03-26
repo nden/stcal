@@ -56,10 +56,10 @@ jobs:
             python-version: 3.8
             toxenv: py38
 
-          - name: jwst tests
-            runs-on: ubuntu-latest
-            python-version: 3.8
-            toxenv: jwst
+          #- name: jwst tests
+          #  runs-on: ubuntu-latest
+          #  python-version: 3.8
+          #  toxenv: jwst
 
           - name: romancal tests
             runs-on: ubuntu-latest
