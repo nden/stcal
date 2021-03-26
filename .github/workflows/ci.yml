@@ -74,40 +74,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Upgrade pip
-        run: |
-          python -m pip install --upgrade pip
-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.cfg') }}-${{ hashFiles('**/requirements-sdp.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Get CRDS context
-        id: crds-context
-        run: |
-          pip install crds
-          echo "::set-output name=pmap::$(crds list --resolve-contexts --contexts | cut -f 1 -d ".")"
-
-      - name: Restore CRDS cache
-        uses: actions/cache@v2
-        with:
-          path: ~/crds_cache
-          key: crds-${{ matrix.toxenv }}-${{ steps.crds-context.outputs.pmap }}
-
       - name: Install tox
         run: |
           pip install tox
       - name: Run tox
         run: tox -e ${{ matrix.toxenv }}
+
+      - name: "Upload coverage to Codecov"
+        if: ${{ contains(matrix.toxenv,'coverage') }}
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
 
   # Kept in a separate job because it needs extra system dependencies
   # that can't be installed by tox.
